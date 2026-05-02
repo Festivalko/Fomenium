@@ -40,10 +40,10 @@ func main() {
     
     nexusGas := uint64(200000)
     
-    fmt.Printf("│  ⚡ P4 aggregation:     %v\n", p4Time)
-    fmt.Printf("│  🔍 Signature verify:  %v\n", validationTime)
-    fmt.Printf("│  🔐 ZK proof:          %v\n", zkTime)
-    fmt.Printf("│  📦 TOTAL:             %v\n", totalNexusTime)
+    fmt.Printf("│   P4 aggregation:     %v\n", p4Time)
+    fmt.Printf("│   Signature verify:  %v\n", validationTime)
+    fmt.Printf("│   ZK proof:          %v\n", zkTime)
+    fmt.Printf("│   TOTAL:             %v\n", totalNexusTime)
     
     fmt.Println("│                                                                                     │")
     fmt.Println("└─────────────────────────────────────────────────────────────────────────────────────┘")
@@ -52,6 +52,6 @@ func main() {
     eth.CompareWithNexus(txCount, totalNexusTime, nexusGas)
     
     fmt.Println()
-    fmt.Println("🎯 DEMO COMPLETE! This shows Nexus is dramatically faster than Ethereum L1.")
+    fmt.Println(" DEMO COMPLETE! This shows Nexus is dramatically faster than Ethereum L1.")
     fmt.Println("   Run 'make up' to start the real services and send actual payments.")
 }

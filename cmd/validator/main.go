@@ -16,11 +16,9 @@ import (
 )
 
 type Validator struct {
-    port        string
-    balances    *balance.Manager
-    logger      *log.Logger
-    txCount     int
-    totalTime   time.Duration
+    port     string
+    balances *balance.Manager
+    logger   *log.Logger
 }
 
 func NewValidator(port string) *Validator {
@@ -32,13 +30,13 @@ func NewValidator(port string) *Validator {
 }
 
 func (v *Validator) Start() error {
-    listener, err := net.Listen("tcp", "localhost:"+v.port)
+    listener, err := net.Listen("tcp", "0.0.0.0:"+v.port)
     if err != nil {
         return fmt.Errorf("failed to start: %w", err)
     }
     defer listener.Close()
     
-    v.logger.Printf("✅ Validator running on port %s", v.port)
+    v.logger.Printf(" Validator running on port %s", v.port)
     v.initTestBalances()
     
     go v.acceptConnections(listener)
@@ -74,29 +72,35 @@ func (v *Validator) handleConnection(conn net.Conn) {
     }
     
     start := time.Now()
-    v.logger.Printf("📦 Received batch %s with %d payments", batch.ID[:8], len(batch.Payments))
+    v.logger.Printf(" Received batch %s with %d payments", batch.ID[:8], len(batch.Payments))
     
     validPayments := make([]payment.Payment, 0)
     
     for i, p := range batch.Payments {
         if !p.Verify() {
-            v.logger.Printf("  ❌ Invalid signature for payment %d", i)
+            v.logger.Printf("   Invalid signature for payment %d", i)
             continue
         }
         
-        balance := v.balances.GetBalance(p.From)
+        var fromAddr [33]byte
+        copy(fromAddr[:], p.From[:])
+        
+        balance := v.balances.GetBalance(fromAddr)
         if balance < p.Amount {
-            v.logger.Printf("  ❌ Insufficient balance for payment %d", i)
+            v.logger.Printf("   Insufficient balance for payment %d", i)
             continue
         }
         
-        v.logger.Printf("  ✅ Payment %d is valid", i)
+        v.logger.Printf("   Payment %d valid: %d tokens", i, p.Amount)
         validPayments = append(validPayments, p)
     }
     
     // Применяем валидные платежи
     for _, p := range validPayments {
-        v.balances.Transfer(p.From, p.To, p.Amount)
+        var fromAddr, toAddr [33]byte
+        copy(fromAddr[:], p.From[:])
+        copy(toAddr[:], p.To[:])
+        v.balances.Transfer(fromAddr, toAddr, p.Amount)
     }
     
     elapsed := time.Since(start)
@@ -108,7 +112,7 @@ func (v *Validator) handleConnection(conn net.Conn) {
     }
     
     encoder.Encode(response)
-    v.logger.Printf("📤 Sent back %d valid payments in %v", len(validPayments), elapsed)
+    v.logger.Printf(" Validated %d/%d payments in %v", len(validPayments), len(batch.Payments), elapsed)
 }
 
 func (v *Validator) initTestBalances() {
@@ -116,10 +120,10 @@ func (v *Validator) initTestBalances() {
         name    string
         balance uint64
     }{
-        {"alice", 10000},
-        {"bob", 5000},
-        {"charlie", 8000},
-        {"david", 3000},
+        {"alice", 1000000},
+        {"bob", 500000},
+        {"charlie", 800000},
+        {"david", 300000},
     }
     
     for _, acc := range testAccounts {
@@ -128,7 +132,7 @@ func (v *Validator) initTestBalances() {
         v.balances.SetBalance(addr, acc.balance)
         v.logger.Printf("  Created account %s with balance %d", acc.name, acc.balance)
     }
-    v.logger.Println("✅ Test balances initialized")
+    v.logger.Println(" Test balances initialized")
 }
 
 func main() {

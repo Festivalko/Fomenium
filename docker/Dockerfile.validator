@@ -1,0 +1,15 @@
+FROM golang:1.22-alpine AS builder
+RUN apk add --no-cache git
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download 2>/dev/null || true
+COPY . .
+RUN CGO_ENABLED=0 go build -o validator cmd/validator/main.go
+
+FROM alpine:latest
+RUN apk add --no-cache ca-certificates
+WORKDIR /app
+COPY --from=builder /app/validator /app/validator
+RUN chmod +x /app/validator
+EXPOSE 8001
+CMD ["/app/validator", "-port", "8001"]

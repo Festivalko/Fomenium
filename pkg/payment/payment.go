@@ -57,17 +57,17 @@ func (p *Payment) ComputeHash() [32]byte {
     offset += 33
     
     for i := 0; i < 8; i++ {
-        data[offset+i] = byte(p.Amount >> (56 - i*8))
+        data[offset+i] = byte(p.Amount >> (56 - uint(i)*8))
     }
     offset += 8
     
     for i := 0; i < 8; i++ {
-        data[offset+i] = byte(p.Nonce >> (56 - i*8))
+        data[offset+i] = byte(p.Nonce >> (56 - uint(i)*8))
     }
     offset += 8
     
     for i := 0; i < 8; i++ {
-        data[offset+i] = byte(p.Timestamp >> (56 - i*8))
+        data[offset+i] = byte(p.Timestamp >> (56 - uint(i)*8))
     }
     
     return sha256.Sum256(data)

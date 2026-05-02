@@ -41,7 +41,7 @@ func main() {
     privKey, _ := crypto.PrivateKeyFromHex(*fromHex)
     pubKey, _ := crypto.PublicKeyFromHex(*toHex)
     
-    fmt.Printf("💰 Sending %d payment(s) of %d tokens\n", *count, *amount)
+    fmt.Printf("Sending %d payment(s) of %d tokens\n", *count, *amount)
     fmt.Println(strings.Repeat("-", 50))
     
     totalTime := time.Duration(0)
@@ -60,8 +60,8 @@ func main() {
     
     avgTime := totalTime / time.Duration(*count)
     fmt.Println(strings.Repeat("-", 50))
-    fmt.Printf("📈 Average time: %v\n", avgTime)
-    fmt.Printf("🚀 Theoretical TPS: %.0f\n", float64(time.Second)/float64(avgTime))
+    fmt.Printf("Average time: %v\n", avgTime)
+    fmt.Printf("Theoretical TPS: %.0f\n", float64(time.Second)/float64(avgTime))
 }
 
 func sendPaymentViaHTTP(p *payment.Payment, serverAddr string, id int) {
@@ -91,7 +91,7 @@ func sendPaymentViaHTTP(p *payment.Payment, serverAddr string, id int) {
 
 func generateKeys() {
     priv, pub, _ := crypto.GenerateKeyPair()
-    fmt.Println("🔑 NEW KEY PAIR")
+    fmt.Println("NEW KEY PAIR")
     fmt.Println("==================================================")
     fmt.Printf("Private: %x\n", priv.Serialize())
     fmt.Printf("Public:  %x\n", pub.SerializeCompressed())
