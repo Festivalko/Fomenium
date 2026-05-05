@@ -1,0 +1,21 @@
+# Rust build artifacts
+zk/target/
+
+# Docker volumes
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Go
+vendor/
+
+# Logs
+*.log
