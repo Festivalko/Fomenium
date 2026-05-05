@@ -10,14 +10,21 @@ services:
       - nexus-net
 
   p4-switch:
-    build: 
+    build:
       context: .
       dockerfile: docker/Dockerfile.p4
     container_name: nexus-p4
+    privileged: true
     ports:
       - "9090:9090"
     networks:
       - nexus-net
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9090 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
   sp1-prover:
     build:
@@ -28,6 +35,12 @@ services:
       - "8081:8080"
     networks:
       - nexus-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
 
   validator:
     build:
@@ -38,6 +51,11 @@ services:
       - "8001:8001"
     networks:
       - nexus-net
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 8001 || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   multiplexer:
     build:
